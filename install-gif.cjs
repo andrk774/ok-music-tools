@@ -10,8 +10,9 @@ const escape = text => text.replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>
   try { browser = await chromium.launch({channel:'chrome',headless:true}); }
   catch (_) { browser = await chromium.launch({headless:true}); }
   const topCode = fs.readFileSync(path.join(__dirname,'savefrom-ok-batch.user.js'),'utf8').split('\n').slice(0,7).join('\n');
-  const steps = [
-    {title:'1. Скачайте скрипт с GitHub', note:'Войдите в GitHub: репозиторий приватный. Откройте файл и нажмите Download raw file.', tab:'GitHub · andrk774 / ok-music-tools', x:949,y:300,
+  const orangeOnly = process.argv.includes('--orangemonkey');
+  const scriptSteps = [
+    {title:'1. Скачайте скрипт с GitHub', note:'Откройте savefrom-ok-batch.user.js в репозитории и нажмите Download raw file.', tab:'GitHub · andrk774 / ok-music-tools', x:949,y:300,
       body:'<div class="path">andrk774 / ok-music-tools</div><h2>savefrom-ok-batch.user.js</h2><div class="toolbar"><span>Готовый скрипт · 10.63.2.5</span><button class="focus">↓ Download raw file</button></div><pre>'+escape(topCode)+'</pre>'},
     {title:'2. Скопируйте весь код файла',note:'Откройте скачанный .user.js через «Открыть с помощью → Блокнот». Ctrl+A, затем Ctrl+C.',tab:'Блокнот · savefrom-ok-batch.user.js',x:570,y:427,
       body:'<div class="toolbar">Файл　 Правка　 Вид <span class="key">Ctrl+A → Ctrl+C</span></div><pre class="selected">'+escape(topCode)+'\n\n// … далее весь код файла …</pre><p class="tip">Копируйте весь файл, включая заголовок и код ниже.</p>'},
@@ -24,6 +25,21 @@ const escape = text => text.replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>
     {title:'6. Обновите страницу музыки ОК',note:'Вернитесь в «Моя музыка» и нажмите F5. Должна появиться панель «ОК — музыка · v5».',tab:'ok.ru · Моя музыка',x:119,y:231,
       body:'<div class="toolbar"><button class="focus">↻ F5</button><span>Моя музыка</span></div><div class="finish"><strong>ОК — музыка · v5</strong><p><button>Автосбор</button><button>Скачать всё</button></p><p>До песни включительно: <b>Колосок</b></p><p><button>Собрать и выбрать до песни</button></p><p><button>Скачать выбранные</button><button>Продолжить очередь / сбор</button></p><p><button>Пауза</button><button>Стоп</button><button>Скачать отчёт</button></p></div><p class="tip">Сначала проверьте загрузку одной песни. Результат — Ctrl+J.</p>'}
   ];
+  const orangeSteps = [
+    {title:'1. Откройте OrangeMonkey в магазине Chrome',note:'Перейдите по ссылке Chrome Web Store из README. Нажмите «Установить» / Add to Chrome.',tab:'Chrome Web Store · OrangeMonkey',
+      body:'<div class="path">chromewebstore.google.com</div><div class="toolbar"><h2>◉ OrangeMonkey</h2><button class="focus">Установить</button></div><div class="card"><h2>Менеджер пользовательских скриптов</h2><p>Расширение запускает скрипты на веб-страницах.</p><p>Наш загрузчик музыки устанавливается отдельно — следующим шагом.</p></div><p class="tip">Используйте ссылку на OrangeMonkey в README проекта.</p>'},
+    {title:'2. Подтвердите установку расширения',note:'Прочитайте запрошенные разрешения и нажмите «Установить расширение». Дождитесь завершения.',tab:'Chrome · подтверждение установки',
+      body:'<div class="card" style="max-width:850px;margin:24px auto"><h2>Установить OrangeMonkey?</h2><p>Chrome покажет разрешения, которые запрашивает расширение.</p><p class="tip">Точный перечень отображается в вашем браузере.</p><div class="toolbar" style="justify-content:flex-end;margin-top:40px"><button>Отмена</button><button class="focus">Установить расширение</button></div></div>'},
+    {title:'3. Закрепите значок OrangeMonkey',note:'Нажмите значок пазла «Расширения» справа в Chrome. Рядом с OrangeMonkey нажмите булавку.',tab:'Chrome · меню расширений',
+      body:'<div class="toolbar"><span>Панель браузера</span><button>Расширения · пазл</button></div><div class="card" style="margin-left:330px"><h2>Расширения</h2><div class="toolbar"><span class="orange">◉ OrangeMonkey</span><button class="focus">Закрепить · булавка</button></div></div><p class="tip">После закрепления оранжевый значок будет виден в панели Chrome.</p>'},
+    {title:'4. Разрешите пользовательские скрипты',note:'Откройте chrome://extensions/ → OrangeMonkey → «Подробнее». Включите Allow User Scripts.',tab:'chrome://extensions/ · OrangeMonkey · Подробнее',
+      body:'<h2>OrangeMonkey</h2><div class="card"><div class="toolbar"><span>Расширение включено</span><span class="ok">ВКЛ</span></div><div class="toolbar"><span>Разрешить пользовательские скрипты<br><small>Allow User Scripts</small></span><button class="focus">Включить</button></div></div><p class="tip">Chrome 138 и новее: отдельное разрешение расширения.<br>В более старых версиях использовался «Режим разработчика».</p>'},
+    {title:'5. Откройте My scripts — OrangeMonkey готов',note:'Правой кнопкой по значку OrangeMonkey → «Параметры» / Options. Откройте My scripts.',tab:'OrangeMonkey · My scripts',
+      body:'<div class="orange">◉ OrangeMonkey</div><div class="toolbar"><h2>My scripts</h2><button class="focus">New</button></div><div class="card"><h2>Теперь можно установить загрузчик музыки</h2><p>Следуйте второму GIF в README:</p><p>скачать файл → скопировать код → New → вставить → Save &amp; Close.</p></div><p class="tip">Установлен только менеджер. Сам скрипт нужно добавить отдельно.</p>'}
+  ];
+  const steps = orangeOnly ? orangeSteps : scriptSteps;
+  const filename = orangeOnly ? 'install-orangemonkey.gif' : 'install.gif';
+  const footer = orangeOnly ? 'Учебная схема · установка OrangeMonkey в Chrome на Windows' : 'Учебная схема · OrangeMonkey уже установлен · без данных аккаунта';
   try {
     const page=await browser.newPage({viewport:{width:1200,height:800},deviceScaleFactor:1});
     let index=0;
@@ -41,7 +57,7 @@ const escape = text => text.replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>
       .finish{background:#222337;color:white;border:2px solid #ff9800;border-radius:12px;padding:16px;width:670px}.finish strong{font-size:22px}.finish p{margin:8px 0}.finish button{padding:6px 10px;font-size:16px}
       footer{padding:0 36px;display:flex;justify-content:space-between;font-size:16px;color:#637087}.dots{color:#e48400;font-size:20px}
       #pointer{position:fixed;z-index:100;pointer-events:none;color:#111;font-size:44px;text-shadow:1px 1px white,-1px -1px white}#ring{position:fixed;border:4px solid #ff9100;border-radius:50%;width:50px;height:50px;pointer-events:none;display:none}
-      </style><header><h1>${item.title}</h1><p>${item.note}</p></header><div class="browser"><div class="tab">${item.tab}</div><div class="content">${item.body}</div></div><footer><span>Учебная схема · OrangeMonkey уже установлен · без данных аккаунта</span><span class="dots">${steps.map((_,i)=>i===step?'●':'○').join(' ')}</span></footer><div id="pointer">➤</div><div id="ring"></div></html>`);
+      </style><header><h1>${item.title}</h1><p>${item.note}</p></header><div class="browser"><div class="tab">${item.tab}</div><div class="content">${item.body}</div></div><footer><span>${footer}</span><span class="dots">${steps.map((_,i)=>i===step?'●':'○').join(' ')}</span></footer><div id="pointer">➤</div><div id="ring"></div></html>`);
       const target = await page.locator('.focus, .selected').first().boundingBox();
       const point = {x:target.x + target.width * 0.65, y:target.y + target.height * 0.5};
       for(let frame=0;frame<8;frame++){
@@ -54,7 +70,7 @@ const escape = text => text.replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>
       }
     }
     fs.mkdirSync(path.join(__dirname,'docs'),{recursive:true});
-    execFileSync(process.env.FFMPEG_PATH||'ffmpeg',['-y','-framerate','2','-i',path.join(temp,'%03d.png'),'-filter_complex','[0:v]split[a][b];[a]palettegen=max_colors=128:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=3','-loop','0',path.join(__dirname,'docs','install.gif')],{stdio:'pipe'});
-    console.log('Saved docs/install.gif: 6 steps, 24 seconds, 1200×800. Frames: '+temp);
+    execFileSync(process.env.FFMPEG_PATH||'ffmpeg',['-y','-framerate','2','-i',path.join(temp,'%03d.png'),'-filter_complex','[0:v]split[a][b];[a]palettegen=max_colors=128:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=3','-loop','0',path.join(__dirname,'docs',filename)],{stdio:'pipe'});
+    console.log('Saved docs/'+filename+': '+steps.length+' steps, '+(steps.length*4)+' seconds, 1200×800. Frames: '+temp);
   } finally {await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});

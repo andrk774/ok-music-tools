@@ -10,6 +10,10 @@
 
 ### 1. Установите OrangeMonkey в Chrome на Windows
 
+![Установка OrangeMonkey в Chrome — пошаговая анимация](docs/install-orangemonkey.gif)
+
+Учебная GIF-схема: 5 шагов, 20 секунд. Это иллюстрация действий, а не запись установки в аккаунте пользователя.
+
 OrangeMonkey — расширение, которое запускает пользовательские скрипты. Оно устанавливается отдельно от нашего загрузчика музыки.
 
 1. Откройте [OrangeMonkey в Chrome Web Store](https://chromewebstore.google.com/detail/orangemonkey/ekmeppjgajofkpiofbebgcbohbmfldaf).
@@ -89,6 +93,8 @@ node --check savefrom-ok-batch.user.js
 Скриншот создаётся командой `npm run screenshot`. Нужен установленный Chrome или Chromium Playwright (`npx playwright install chromium`).
 
 Учебная GIF-анимация создаётся командой `npm run gif`. Дополнительно нужен FFmpeg в PATH (или переменная `FFMPEG_PATH` с путём к исполняемому файлу). Кадры создаются во временной папке и не включаются в репозиторий.
+
+Отдельная анимация установки OrangeMonkey: `npm run gif:orangemonkey`.
 
 ## Происхождение
 

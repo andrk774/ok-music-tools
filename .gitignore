@@ -1,0 +1,8 @@
+node_modules/
+*.log
+ok-music-report*.json
+.env*
+playwright-report/
+test-results/
+savefrom-ok-batch-v4.user.js
+batch-panel-v4.js

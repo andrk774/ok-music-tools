@@ -1,0 +1,18 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const root = __dirname;
+let source = fs.readFileSync(path.join(root, 'savefrom-original.user.js'), 'utf8');
+const needle = 'S={downloadIdPrefix:"savefrom_ok_audio_download_",';
+if (source.split(needle).length !== 2) throw new Error('Expected exactly one OK module');
+const panel = fs.readFileSync(path.join(root, 'batch-panel-v5.js'), 'utf8');
+source = source.replace(needle, 'S={_customBatchPanel:' + panel + ',downloadIdPrefix:"savefrom_ok_audio_download_",');
+source = source.replace(/^\/\/ @name\s+.*$/m, '// @name        SaveFrom — ОК выбор количества (локальная версия)');
+source = source.replace(/^\/\/ @namespace\s+.*$/m, '// @namespace   local.ok-music-batch');
+source = source.replace(/^\/\/ @version\s+.*$/m, '// @version     10.63.2.5');
+source = source.replace(/^\/\/ @description\s+.*$/m, '// @description Автосбор музыки ОК, выбор до песни, галочки, очередь, пауза, сохранение и отчёт. Локальная модификация SaveFrom.');
+source = source.replace(/^\/\/ @updateURL\s+.*$/m, '// @updateURL   none');
+source = source.replace(/^\/\/ @downloadURL\s+.*$/m, '// @downloadURL none');
+source = source.replace(/^\/\/ @include\s+.*\r?\n/gm, '');
+source = source.replace('// @run-at', '// @match       https://ok.ru/*\n// @match       https://*.ok.ru/*\n// @match       https://odnoklassniki.ru/*\n// @match       https://*.odnoklassniki.ru/*\n// @run-at');
+fs.writeFileSync(path.join(root, 'savefrom-ok-batch.user.js'), source);
+console.log('Built savefrom-ok-batch.user.js');
